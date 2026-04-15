@@ -43,6 +43,7 @@ export const signup = async (req, res) => {
       user: { _id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (err) {
+    console.error('SIGNUP ERROR:', err); // ← add this
     res.status(500).json({ message: err.message });
   }
 };

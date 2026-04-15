@@ -1,4 +1,3 @@
-// models/User.js
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -10,19 +9,17 @@ const userSchema = new mongoose.Schema({
   refreshToken: { type: String },
 }, { timestamps: true });
 
-userSchema.index({ email: 1 });
+// Remove the duplicate index line below — 'unique: true' already creates one
+// userSchema.index({ email: 1 });  ← DELETE THIS LINE (it causes the warning too)
 
-// Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+// ✅ Promise-based async hook — no `next` parameter needed
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
-  next();
 });
 
-// Compare password method
 userSchema.methods.matchPassword = async function (plain) {
   return bcrypt.compare(plain, this.password);
 };
 
-// Export as default so ESM import works
 export default mongoose.model('User', userSchema);

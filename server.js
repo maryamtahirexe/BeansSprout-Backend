@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
+//import mongoSanitize from 'express-mongo-sanitize2';
+//import xss from 'xss-clean';
 import compression from 'compression';
 import morgan from 'morgan';
 
@@ -23,18 +23,21 @@ connectDB();
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
-app.use(mongoSanitize());
-app.use(xss());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true,
+}));
+//app.use(mongoSanitize());
+//app.use(xss());
 app.use(compression());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use('/api', globalLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
+app.use('/api', globalLimiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/menu', menuRoutes);
